@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Laundry Admin Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+<body>
+
+<header>
+
+    <nav>
+
+        <h1>FreshFold Laundry Admin</h1>
+
+        <a href="/">View Website</a>
+
+    </nav>
+
+</header>
+
+<section>
+
+    <h2>Customer Bookings</h2>
+
+    {{if .Bookings}}
+
+        <div class="cards">
+
+            {{range .Bookings}}
+
+            <div class="card">
+
+                <h3>
+                    Booking #{{.ID}}
+                </h3>
+
+                <p>
+                    <strong>Customer:</strong>
+                    {{.Name}}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    {{.Phone}}
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    {{.Email}}
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    {{.Address}}
+                </p>
+
+                <p>
+                    <strong>Service:</strong>
+                    {{.Service}}
+                </p>
+
+                <p>
+                    <strong>Pickup:</strong>
+                    {{.PickupDate}}
+                    at
+                    {{.PickupTime}}
+                </p>
+
+                <p>
+                    <strong>Details:</strong>
+                    {{.Details}}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    {{.Status}}
+                </p>
+
+                <small>
+                    Created: {{.CreatedAt}}
+                </small>
+
+            </div>
+
+            {{end}}
+
+        </div>
+
+    {{else}}
+
+        <p>No bookings yet.</p>
+
+    {{end}}
+
+</section>
+
+</body>
+
+</html>
