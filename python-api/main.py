@@ -16,7 +16,9 @@ from auth_schemas import LoginRequest, SignupRequest, UserResponse
 from database import Base, engine, get_db
 from models import Booking
 from user_models import User
-
+from order_models import Order
+from order_item_models import OrderItem
+from order_schemas import OrderCreate, OrderResponse
 
 app = FastAPI(
     title="Laundry Business API",
@@ -196,6 +198,69 @@ def health():
     return {
         "status": "healthy"
     }
+
+
+@app.post("/orders", response_model=OrderResponse)
+def create_order(
+    order_data: OrderCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    order = Order(
+        user_id=current_user.id,
+        pickup_address=order_data.pickup_address,
+        pickup_date=order_data.pickup_date,
+        pickup_time=order_data.pickup_time,
+        delivery_date=order_data.delivery_date,
+        service=order_data.service,
+        special_instructions=order_data.special_instructions,
+        status="BOOKED"
+    )
+
+    db.add(order)
+    db.commit()
+    db.refresh(order)
+
+    return order
+
+
+@app.get("/orders", response_model=list[OrderResponse])
+def get_my_orders(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    orders = (
+        db.query(Order)
+        .filter(Order.user_id == current_user.id)
+        .order_by(Order.id.desc())
+        .all()
+    )
+
+    return orders
+
+
+@app.get("/orders/{order_id}", response_model=OrderResponse)
+def get_my_order(
+    order_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    order = (
+        db.query(Order)
+        .filter(
+            Order.id == order_id,
+            Order.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not order:
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found"
+        )
+
+    return order
 
 
 # ============================================================
